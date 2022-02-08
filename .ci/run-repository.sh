@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # parameters are available to this script
 
-
 # STACK_VERSION -- version e.g Major.Minor.Patch(-Prelease)
 # TEST_SUITE -- which test suite to run: free or platinum
 # ELASTICSEARCH_URL -- The url at which elasticsearch is reachable, a default is composed based on STACK_VERSION and TEST_SUITE
@@ -10,7 +9,7 @@ script_path=$(dirname $(realpath -s $0))
 source $script_path/functions/imports.sh
 set -euo pipefail
 
-DOTNET_VERSION=${DOTNET_VERSION-5.0.103}
+DOTNET_VERSION=${DOTNET_VERSION-6.0.101}
 ELASTICSEARCH_URL=${ELASTICSEARCH_URL-"$elasticsearch_url"}
 elasticsearch_container=${elasticsearch_container-}
 
@@ -37,7 +36,9 @@ echo -e "\033[34;1mINFO:\033[0m DOTNET_VERSION ${DOTNET_VERSION}\033[0m"
  
 echo -e "\033[1m>>>>> Build [elastic/elasticsearch-net container] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>\033[0m"
 
-docker build --file .ci/DockerFile --tag elastic/elasticsearch-net .
+docker build --file .ci/DockerFile --tag elastic/elasticsearch-net \
+  --build-arg USER_ID=$(id -u) \
+  --build-arg GROUP_ID=$(id -g) .
 
 echo -e "\033[1m>>>>> Run [elastic/elasticsearch-net container] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>\033[0m"
 
